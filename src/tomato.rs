@@ -66,9 +66,5 @@ impl Shape for Tomato {
             painter.paint(self.x as usize, (self.y - self.radius - i as f64) as usize, Color::Green);
         }
 		
-		// let leaf_dimensions = self.radius/3.0;
-		// // for i in 0..leaf_dimensions as i32{
-		// // 	painter.paint(x, y, color);
-		// // }
     }
 }

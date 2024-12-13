@@ -1,5 +1,6 @@
 mod tomato;
 mod manjoo;
+use manjoo::Manjoo;
 use ratatui::{
     backend::TermwizBackend,
     style::Color,
@@ -35,6 +36,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                         x: size.width as f64 / 2.0,
                         y: size.height as f64 / 2.0,
                         radius:5.0,
+                    });
+                    ctx.draw(&Manjoo{
+                       
                     });
                 });
             f.render_widget(canvas, size);
