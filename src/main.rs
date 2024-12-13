@@ -1,4 +1,5 @@
 mod tomato;
+mod manjoo;
 use ratatui::{
     backend::TermwizBackend,
     style::Color,
@@ -19,8 +20,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
     terminal.hide_cursor()?;
 
-    let now = Instant::now();
     terminal.clear()?;
+    let now = Instant::now();
     while now.elapsed() < Duration::from_secs(10) {
         terminal.draw(|f| {
             let size = f.area();

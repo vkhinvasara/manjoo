@@ -42,5 +42,33 @@ impl Shape for Tomato {
             }
             x += 1;
         }
+
+        let mut stack = vec![(self.x as i32, self.y as i32)];
+        let mut visited = std::collections::HashSet::new();
+
+        while let Some((cx, cy)) = stack.pop() {
+            if visited.contains(&(cx, cy)) {
+                continue;
+            }
+            visited.insert((cx, cy));
+
+            if (cx as f64 - self.x).powi(2) + (cy as f64 - self.y).powi(2) <= self.radius.powi(2) {
+                painter.paint(cx as usize, cy as usize, Color::Red);
+
+                stack.push((cx + 1, cy));
+                stack.push((cx - 1, cy));
+                stack.push((cx, cy + 1));
+                stack.push((cx, cy - 1));
+            }
+        }
+		let stem_height = self.radius/2.0;
+        for i in 0..stem_height as i32 {
+            painter.paint(self.x as usize, (self.y - self.radius - i as f64) as usize, Color::Green);
+        }
+		
+		// let leaf_dimensions = self.radius/3.0;
+		// // for i in 0..leaf_dimensions as i32{
+		// // 	painter.paint(x, y, color);
+		// // }
     }
 }
