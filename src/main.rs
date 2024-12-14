@@ -1,20 +1,19 @@
-mod tomato;
 mod manjoo;
+mod tomato;
 use manjoo::Manjoo;
 use ratatui::{
     backend::TermwizBackend,
-    style::Color,
     symbols::Marker,
-    widgets::{canvas::{self, Canvas, Circle, Map}, Block, Paragraph},
+    widgets::{canvas::Canvas, Block},
     Terminal,
 };
-use tomato::Tomato;
 use std::{
     error::Error,
     io::stdout,
     thread,
     time::{Duration, Instant},
 };
+use tomato::Tomato;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let backend = TermwizBackend::new()?;
@@ -23,27 +22,68 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     terminal.clear()?;
     let now = Instant::now();
-    while now.elapsed() < Duration::from_secs(10) {
+    let mut render_static = true;
+    let mut running_manjoo_x: usize = 0;
+    let mut running_flag = false;
+    let mut has_tomato = false;
+
+    let mut size_global = ratatui::layout::Rect::default();
+
+    while now.elapsed() < Duration::from_secs(20) {
         terminal.draw(|f| {
             let size = f.area();
+            size_global = size.clone();
             let canvas = Canvas::default()
-                .block(Block::default().borders(ratatui::widgets::Borders::ALL).title("Manjoo"))
-                .x_bounds([0.0, (size.width*2) as f64])
-                .y_bounds([0.0, (size.height*2) as f64])
+                .block(
+                    Block::default()
+                        .borders(ratatui::widgets::Borders::ALL)
+                        .title("Manjoo"),
+                )
+                .x_bounds([0.0, (size.width * 2) as f64])
+                .y_bounds([0.0, (size.height * 2) as f64])
                 .marker(Marker::HalfBlock)
                 .paint(|ctx| {
                     ctx.draw(&Tomato {
                         x: size.width as f64 / 2.0,
                         y: size.height as f64 / 2.0,
-                        radius:6.0,
+                        radius: 4.0,
                     });
-                    ctx.draw(&Manjoo{
-                       scale:2
-                    });
+                    if render_static {
+                        ctx.draw(&Manjoo {
+                            scale: 2,
+                            is_static: true,
+                            x_position: running_manjoo_x,
+                            running_flag,
+                            has_tomato: false 
+                        });
+                    } else {
+                        ctx.draw(&Manjoo {
+                            scale: 2,
+                            is_static: false,
+                            x_position: running_manjoo_x,
+                            running_flag,
+                            has_tomato
+                        })
+                    }
                 });
             f.render_widget(canvas, size);
         })?;
-        thread::sleep(Duration::from_millis(250));
+        if render_static {
+            render_static = !render_static;
+            thread::sleep(Duration::from_secs(2));
+        }
+        if !render_static {
+            running_flag = !running_flag;
+            running_manjoo_x += 1;
+            if running_manjoo_x > (size_global.width * 2) as usize {
+                running_manjoo_x = 0;
+            }
+            let tomato_x = size_global.width/2 - 4;
+            if running_manjoo_x >= (tomato_x as usize){
+                has_tomato = true;
+            }
+        }
+        thread::sleep(Duration::from_millis(50));
     }
 
     terminal.show_cursor()?;
