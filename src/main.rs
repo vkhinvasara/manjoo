@@ -9,7 +9,6 @@ use ratatui::{
 };
 use std::{
     error::Error,
-    io::stdout,
     thread,
     time::{Duration, Instant},
 };
@@ -22,11 +21,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     terminal.clear()?;
     let now = Instant::now();
+    let mut sleep_duration = 10;
     let mut render_static = true;
     let mut running_manjoo_x: usize = 0;
     let mut running_flag = false;
     let mut has_tomato = false;
-
+    let mut gets_tomato = 0;
+    let tomato_radius = 6.0;
     let mut size_global = ratatui::layout::Rect::default();
 
     while now.elapsed() < Duration::from_secs(20) {
@@ -37,24 +38,26 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .block(
                     Block::default()
                         .borders(ratatui::widgets::Borders::ALL)
-                        .title("Manjoo"),
+                        .title("WheekHigh, RIP MANJOO"),
                 )
                 .x_bounds([0.0, (size.width * 2) as f64])
                 .y_bounds([0.0, (size.height * 2) as f64])
                 .marker(Marker::HalfBlock)
                 .paint(|ctx| {
-                    ctx.draw(&Tomato {
-                        x: size.width as f64 / 2.0,
-                        y: size.height as f64 / 2.0,
-                        radius: 4.0,
-                    });
+                    if !has_tomato {
+                        ctx.draw(&Tomato {
+                            x: size.width as f64 / 2.0,
+                            y: size.height as f64 / 2.0,
+                            radius: tomato_radius,
+                        });
+                    }
                     if render_static {
                         ctx.draw(&Manjoo {
                             scale: 2,
                             is_static: true,
                             x_position: running_manjoo_x,
                             running_flag,
-                            has_tomato: false 
+                            has_tomato: false,
                         });
                     } else {
                         ctx.draw(&Manjoo {
@@ -62,7 +65,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             is_static: false,
                             x_position: running_manjoo_x,
                             running_flag,
-                            has_tomato
+                            has_tomato,
                         })
                     }
                 });
@@ -78,12 +81,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             if running_manjoo_x > (size_global.width * 2) as usize {
                 running_manjoo_x = 0;
             }
-            let tomato_x = size_global.width/2 - 4;
-            if running_manjoo_x >= (tomato_x as usize){
+            let tomato_x = (size_global.width as f64 / 2.0) as usize - (tomato_radius as usize) * 8;
+            if running_manjoo_x >= (tomato_x) {
+                sleep_duration = 100;
+                gets_tomato = running_manjoo_x;
                 has_tomato = true;
             }
         }
-        thread::sleep(Duration::from_millis(50));
+        thread::sleep(Duration::from_millis(sleep_duration));
     }
 
     terminal.show_cursor()?;
