@@ -27,18 +27,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         terminal.draw(|f| {
             let size = f.area();
             let canvas = Canvas::default()
-                .block(Block::default().borders(ratatui::widgets::Borders::ALL).title("Tomato"))
-                .x_bounds([0.0, size.width as f64])
-                .y_bounds([0.0, size.height as f64])
+                .block(Block::default().borders(ratatui::widgets::Borders::ALL).title("Manjoo"))
+                .x_bounds([0.0, (size.width*2) as f64])
+                .y_bounds([0.0, (size.height*2) as f64])
                 .marker(Marker::HalfBlock)
                 .paint(|ctx| {
                     ctx.draw(&Tomato {
                         x: size.width as f64 / 2.0,
                         y: size.height as f64 / 2.0,
-                        radius:5.0,
+                        radius:6.0,
                     });
                     ctx.draw(&Manjoo{
-                       
+                       scale:2
                     });
                 });
             f.render_widget(canvas, size);

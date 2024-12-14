@@ -6,6 +6,7 @@ use ratatui::{
 };
 
 pub struct Manjoo {
+	pub scale: u8
 }
 
 impl Shape for Manjoo {
@@ -43,6 +44,7 @@ impl Shape for Manjoo {
 		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
 		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
 		];
+		let scale = self.scale as usize;
         let height = 32;
         let width = 32;
         for y in 0..height {
@@ -51,18 +53,19 @@ impl Shape for Manjoo {
                 let color = pixel_data[index];
                 
                     let color = match color {
-                        0xff4294f3 => Color::Blue,
-						0xfff39442 => Color::Yellow,
+						0xfff39442 => Color::Indexed(172),
                         0xffffffff => Color::White,
                         0xff000000 => Color::Black,
-						0xffff9c9c => Color::LightRed,
-						0xfff8b1b1 => Color::LightRed,
+						0xffff9c9c => Color::Indexed(210),
+						0xfff8b1b1 => Color::Indexed(210),
                         0xff3434fe => Color::Red,
-                        0xffaaaae8 => Color::Gray,
-                        0xffb1b1f8 => Color::Gray,
                         _ => continue,
 					};
-                    painter.paint(x as usize, y as usize, color);
+					for dy in 0..scale {
+						for dx in 0..scale {
+							painter.paint((x * scale + dx) as usize, (y * scale + dy) as usize, color);
+						}
+					}
                 }
             }
         }
