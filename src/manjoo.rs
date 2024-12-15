@@ -6,6 +6,7 @@ pub struct Manjoo {
     pub scale: u8,
     pub is_static: bool,
     pub x_position: usize,
+    pub y_position: f64,
     pub running_flag: bool,
 	pub has_tomato:bool
 }
@@ -29,8 +30,8 @@ impl Shape for Manjoo {
 			}
         };
         let scale = self.scale as usize;
-        let height = 32;
-        let width = 32;
+        let height = if pixels.len() == 4096{64} else{32};
+        let width = if pixels.len() == 4096{64} else{32};
         for y in 0..height {
             for x in 0..width {
                 let index = (y * width + x) as usize;
@@ -44,7 +45,11 @@ impl Shape for Manjoo {
                     0xfff8b1b1 => Color::Indexed(210),
                     0xff3434fe => Color::Red,
 					0xfff34242 => Color::Red,
+                    0xffff0000 => Color::Red,
+                    0xff58ff00 => Color::Green,
 					0xff3e8f00 => Color::Green,
+                    0xff7b5227 => Color::Indexed(130),
+                    0x00000000 => continue,
                     _ => continue,
                 };
                 for dy in 0..scale {
@@ -52,7 +57,7 @@ impl Shape for Manjoo {
 						
                         painter.paint(
                             (self.x_position + x * scale + dx) as usize,
-                            (y * scale + dy) as usize,
+                            (self.y_position as usize -27 +y* scale + dy) as usize,
                             color,
                         );
                     }

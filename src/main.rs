@@ -3,7 +3,7 @@ mod tomato;
 mod constants;
 use manjoo::Manjoo;
 use ratatui::{
-    backend::TermwizBackend, layout::Alignment, symbols::Marker, widgets::{canvas::Canvas, Block}, Terminal
+    backend::TermwizBackend, layout::Alignment, symbols::Marker, termwiz::terminal, widgets::{canvas::Canvas, Block}, Terminal
 };
 use std::{
     error::Error,
@@ -13,21 +13,22 @@ use std::{
 use tomato::Tomato;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    
     let backend = TermwizBackend::new()?;
     let mut terminal = Terminal::new(backend)?;
-    terminal.hide_cursor()?;
-
-    terminal.clear()?;
+    // terminal.hide_cursor()?;
+    // terminal.clear()?;
     
     let now = Instant::now();
-    let mut sleep_duration = 10;
+    let mut sleep_duration = 30;
     let mut render_static = true;
     let mut running_manjoo_x: usize = 0;
     let mut running_flag = false;
     let mut has_tomato = false;
-    let tomato_radius = 6.0;
     let mut size_global = ratatui::layout::Rect::default();
-
+    let scale = 1;
+    let tomato_radius = scale as f64 * 3 as f64;
+    
     while now.elapsed() < Duration::from_secs(17) {
         terminal.draw(|f| {
             let size = f.area();
@@ -42,26 +43,29 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .y_bounds([0.0, (size.height * 2) as f64])
                 .marker(Marker::HalfBlock)
                 .paint(|ctx| {
+                    let tomato_y = size.height as f64 ;
                     if !has_tomato {
                         ctx.draw(&Tomato {
                             x: size.width as f64 / 2.0,
-                            y: size.height as f64 / 2.0,
+                            y: tomato_y,
                             radius: tomato_radius,
                         });
                     }
                     if render_static {
                         ctx.draw(&Manjoo {
-                            scale: 2,
+                            scale,
                             is_static: true,
                             x_position: running_manjoo_x,
+                            y_position: tomato_y,
                             running_flag,
                             has_tomato: false,
                         });
                     } else {
                         ctx.draw(&Manjoo {
-                            scale: 2,
+                            scale,
                             is_static: false,
                             x_position: running_manjoo_x,
+                            y_position: tomato_y,
                             running_flag,
                             has_tomato,
                         })
@@ -75,11 +79,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         if !render_static {
             running_flag = !running_flag;
-            running_manjoo_x += 1;
+            running_manjoo_x += 2;
             if running_manjoo_x > (size_global.width * 2) as usize {
                 running_manjoo_x = 0;
             }
-            let tomato_x = (size_global.width as f64 / 2.0) as usize - (tomato_radius as usize) * 8;
+            let tomato_x = (size_global.width as f64 / 2.0) as usize - (tomato_radius as usize) * 15;
             if running_manjoo_x >= (tomato_x) {
                 sleep_duration = 100;
                 has_tomato = true;

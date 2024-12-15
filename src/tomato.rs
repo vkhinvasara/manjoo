@@ -61,7 +61,7 @@ impl Shape for Tomato {
                 stack.push((cx, cy - 1));
             }
         }
-		let stem_height = self.radius/2.0;
+		let stem_height = self.radius/1.5;
         for i in 0..stem_height as i32 {
             painter.paint(self.x as usize, (self.y - self.radius - i as f64) as usize, Color::Green);
         }
