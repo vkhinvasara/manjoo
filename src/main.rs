@@ -9,12 +9,14 @@ use std::{
     error::Error,
     thread,
     time::{Duration, Instant},
+    env
 };
 use tomato::Tomato;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    
-    let backend = TermwizBackend::new()?;
+    let args: Vec<String> = env::args().collect();
+    if args.len()>1 && args[1] == "run"{
+        let backend = TermwizBackend::new()?;
     let mut terminal = Terminal::new(backend)?;
     // terminal.hide_cursor()?;
     // terminal.clear()?;
@@ -94,5 +96,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     terminal.show_cursor()?;
     terminal.flush()?;
+    }
+    else{
+        println!("Usage: manjoo run")
+    }
+
     Ok(())
 }
