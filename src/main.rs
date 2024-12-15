@@ -3,7 +3,7 @@ mod tomato;
 mod constants;
 use manjoo::Manjoo;
 use ratatui::{
-    backend::TermwizBackend, layout::Alignment, symbols::Marker, termwiz::terminal, widgets::{canvas::Canvas, Block}, Terminal
+    backend::TermwizBackend, layout::Alignment, symbols::Marker, widgets::{canvas::Canvas, Block}, Terminal
 };
 use std::{
     error::Error,
